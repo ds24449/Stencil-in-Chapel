@@ -90,19 +90,23 @@ class StenArray{
     proc derivative2D(const weight,const extent,const axis: 2*int){
         var res:StenArray = new StenArray(this,false);
         // Do this in data parallel manner
-        for i in this.ProblemSpace{
-            var sum=0.0;
-            coforall taskNo in 0..1 with (+ reduce sum){
-                for (k,j) in zip(weight[taskNo],extent[taskNo]){
-                    if(!(taskNo == 0 && j==0)){ 
-                        var temp = i;
-                        temp[axis[taskNo]] += j;
-                        sum += k*this.arr[temp];
+        var temp1,temp2:StenArray;
+        temp1 = new StenArray(this,false);
+        temp2 = new StenArray(this,false);
+        coforall taskNo in 0..1 with (ref temp1,ref temp2){
+            if(taskNo == 0){
+                for (j,k) in zip(weight[taskNo],extent[taskNo]){
+                    if(k == 0){
+                        j = 0;
+                        break;
                     }
                 }
+                temp1 = derivative(weight[taskNo],extent[taskNo],axis[taskNo]);
+            }else{
+                temp2 = derivative(weight[taskNo],extent[taskNo],axis[taskNo]);
             }
-            res.arr[i] += sum;
         }
+        res.arr = temp1.arr + temp2.arr;
         res.arr.updateFluff();
         return res;
     }

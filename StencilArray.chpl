@@ -1,6 +1,5 @@
 use StencilDist;
 class StenArray{
-    // Class Supports N-d Arrays
     var Dom: domain;
     var ProblemSpace: domain;
     var arr: [ProblemSpace] real;
@@ -58,7 +57,6 @@ class StenArray{
         @param axis -> An integer along which we need to find the derivative
     */
     proc derivative(const weight,const extent,const axis:int=0){ 
-        // Check if Number of Elemets in Weight and Extent are same or not
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
         var res:StenArray = new StenArray(this);
         if(this.ProblemSpace.rank == 1){
@@ -89,7 +87,6 @@ class StenArray{
     */
     proc derivative2D(const weight,const extent,const axis: 2*int){
         var res:StenArray = new StenArray(this,false);
-        // Do this in data parallel manner
         var temp1,temp2:StenArray;
         temp1 = new StenArray(this,false);
         temp2 = new StenArray(this,false);

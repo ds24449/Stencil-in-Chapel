@@ -13,18 +13,18 @@ class StenArray{
     proc init(tupleDims,boundaryWidth:int = 1,fluffX = 1,fluffY=1,fluffZ = 1){
         if(tupleDims.size == 1) then {
             this.Dom = {1..tupleDims(0)};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth-1),fluff=(fluffX,));
+            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,));
             this.fluff_vals = (fluffX,fluffY,0);
         }
         else if(tupleDims.size == 2) then {
             var (x,y) = tupleDims;
             this.Dom = {1..#x,1..#y};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth-1),fluff=(fluffX,fluffY));
+            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,fluffY));
             this.fluff_vals = (fluffX,fluffY,0);
         }else{
             var (x,y,z) = tupleDims;
             this.Dom = {1..#x,1..#y,1..#z};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth-1),fluff=(fluffX,fluffY,fluffZ));
+            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,fluffY,fluffZ));
             this.fluff_vals = (fluffX,fluffY,fluffZ);
         }
     }
@@ -37,7 +37,7 @@ class StenArray{
         var temp: nDomain.rank*int;
         for i in temp do i=fluff_val;
         this.Dom = nDomain;
-        this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth-1),fluff=temp);
+        this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=temp);
     }
     /*
         Copy Constructor

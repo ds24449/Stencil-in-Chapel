@@ -108,3 +108,7 @@ class StenArray{
         return res;
     }
 }
+
+proc applyBound(A:StenArray,boundtype:string){
+    // This Helper function should let the user apply a certain boundary condition
+}

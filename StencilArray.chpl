@@ -7,24 +7,24 @@ class StenArray{
     /*
         Initialize The  StenArray Object
         @param: tupleDims-> tuple of dimensions in order (x,y,z)
-        @param: boundaryWidth-> Amount of padding to be treated as Boundary 
+        @param: padding-> Amount of padding to be added 
         @param: fluff[dim] -> Fluff value. Dim = [X | Y | Z]
     */
-    proc init(tupleDims,boundaryWidth:int = 1,fluffX = 1,fluffY=1,fluffZ = 1){
+    proc init(tupleDims,padding:int = 1,fluffX = 1,fluffY=1,fluffZ = 1){
         if(tupleDims.size == 1) then {
             this.Dom = {1..tupleDims(0)};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,));
+            this.ProblemSpace = Dom.expand(padding) dmapped Stencil(Dom.expand(padding),fluff=(fluffX,));
             this.fluff_vals = (fluffX,fluffY,0);
         }
         else if(tupleDims.size == 2) then {
             var (x,y) = tupleDims;
             this.Dom = {1..#x,1..#y};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,fluffY));
+            this.ProblemSpace = Dom.expand(padding) dmapped Stencil(Dom.expand(padding),fluff=(fluffX,fluffY));
             this.fluff_vals = (fluffX,fluffY,0);
         }else{
             var (x,y,z) = tupleDims;
             this.Dom = {1..#x,1..#y,1..#z};
-            this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=(fluffX,fluffY,fluffZ));
+            this.ProblemSpace = Dom.expand(padding) dmapped Stencil(Dom.expand(padding),fluff=(fluffX,fluffY,fluffZ));
             this.fluff_vals = (fluffX,fluffY,fluffZ);
         }
     }
@@ -32,12 +32,12 @@ class StenArray{
         Initialize a StenArray Object with N-Dimensions
         @param: nDomain-> A Rectangular Domain for Nd array
     */
-    proc init(nDomain: domain,fluff_val=1,boundaryWidth:int = 1){
+    proc init(nDomain: domain,fluff_val=1,padding:int = 1){
 
         var temp: nDomain.rank*int;
         for i in temp do i=fluff_val;
         this.Dom = nDomain;
-        this.ProblemSpace = Dom dmapped Stencil(Dom.expand(boundaryWidth),fluff=temp);
+        this.ProblemSpace = Dom.expand(padding) dmapped Stencil(Dom.expand(padding),fluff=temp);
     }
     /*
         Copy Constructor

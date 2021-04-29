@@ -109,6 +109,36 @@ class StenArray{
     }
 }
 
-proc applyBound(A:StenArray,boundtype:string){
-    // This Helper function should let the user apply a certain boundary condition
+proc Apply_Bounds(A:StenArray,boundType:string){
+    if(boundType.toLower() == "periodic"){
+        if(A.ProblemSpace.rank>1){
+            for i in 0..<A.ProblemSpace.rank{
+                for j in A.Dom{
+                    var k = j;
+                    var l = j;
+                    l[i] = A.ProblemSpace.dim(i).low;
+                    k[i] = A.ProblemSpace.dim(i).high;
+                    var new_j_1 = j;
+                    var new_j_2 = j;
+                    new_j_1[i] = A.Dom.dim(i).high;
+                    new_j_2[i] = A.Dom.dim(i).low;
+                    A.arr[l] = A.arr[new_j_1];
+                    A.arr[k] = A.arr[new_j_2];
+                }
+            }
+        }else{
+            for j in A.Dom{
+                var k = j;
+                var l = j;
+                l = A.ProblemSpace.low;
+                k = A.ProblemSpace.high;
+                var new_j_1 = j;
+                var new_j_2 = j;
+                new_j_1 = A.Dom.high;
+                new_j_2 = A.Dom.low;
+                A.arr[l] = A.arr[new_j_1];
+                A.arr[k] = A.arr[new_j_2];
+            }
+        }
+    }
 }

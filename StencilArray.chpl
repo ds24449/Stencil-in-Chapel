@@ -107,6 +107,44 @@ class StenArray{
         res.arr.updateFluff();
         return res;
     }
+
+    operator +(lhs:StenArray,rhs:StenArray){
+        var temp = new StenArray(lhs,false);
+        try{
+            if((lhs.Dom.rank == rhs.Dom.rank) && (lhs.Dom.dims() == rhs.Dom.dims())){
+                temp.arr = lhs.arr+rhs.arr;
+                return temp;
+            }else{
+                throw new Error("Rank or Domain MisMatch Found");
+            }
+        }catch e{
+            writeln("Error Raised While Adding StenArray's ",e);
+            return temp;
+        }
+    }
+
+    operator -(lhs:StenArray,rhs:StenArray){
+        var temp = new StenArray(lhs,false);
+        try{
+            if((lhs.Dom.rank == rhs.Dom.rank) && (lhs.Dom.dims() == rhs.Dom.dims())){
+                temp.arr = lhs.arr-rhs.arr;
+                return temp;
+            }else{
+                throw new Error("Rank or Domain MisMatch Found");
+            }
+        }catch e{
+            writeln("Error Raised While Adding StenArray's ",e);
+            return temp;
+        }
+    }
+
+    proc dims() const {
+        return this.Dom;
+    }
+
+    proc dim(idx: int) const{
+        return this.Dom(idx);
+    }
 }
 
 proc Apply_Bounds(A:StenArray,boundType:string){

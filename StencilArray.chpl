@@ -92,12 +92,6 @@ class StenArray{
         temp2 = new StenArray(this,false);
         coforall taskNo in 0..1 with (ref temp1,ref temp2){
             if(taskNo == 0){
-                for (j,k) in zip(weight[taskNo],extent[taskNo]){
-                    if(k == 0){
-                        j = 0;
-                        break;
-                    }
-                }
                 temp1 = derivative(weight[taskNo],extent[taskNo],axis[taskNo]);
             }else{
                 temp2 = derivative(weight[taskNo],extent[taskNo],axis[taskNo]);

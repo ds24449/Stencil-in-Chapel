@@ -17,7 +17,7 @@ iter linspace(type dtype, start, stop, num, in endpoint:bool=true) {
 iter linspace(start, stop, num, endpoint=true) {
     for x in linspace(real(64), start, stop, num, endpoint) do yield x;
 }
-var saveFile = open("/e/GT_chpl/Tests/sinAvgError.txt",iomode.cw);
+var saveFile = open("/e/GT_chpl/Tests/sinAvgError_Values.txt",iomode.cw);
 var saveFileWriter = saveFile.writer();
 
 config var start = 100;
@@ -54,7 +54,7 @@ for n in start..end by step{
     }
     avgError /= n;
 
-    writeln("n,avgError = ",n,",",avgError);
+    // writeln("n,avgError = ",n,",",avgError);
 
     errors[n/start] = avgError;
 

@@ -43,8 +43,10 @@ forall i in cosArray.ProblemSpace do{
     cosArray.arr[i] = cos(values[i]);
 }
 
-var result = sinArray.derivative((-1,0,1),-1..1);
-result.arr = result.arr/(2*dx);
+// var result = sinArray.derivative((-1,0,1),-1..1);
+// result.arr = result.arr/(2*dx);
+
+var result = central_diff(sinArray,0,2,step=dx);
 writeln("Sin' = ",result.arr[1],", Cos = ",cosArray.arr[1]);
 
 

@@ -45,8 +45,10 @@ for n in start..end by step{
         cosArray.arr[i] = cos(grid[i]);
     }
 
-    var result = sinArray.derivative((-1,0,1),-1..1);
-    result.arr = result.arr/(2*h);
+    // var result = sinArray.derivative((-1,0,1),-1..1);
+    // result.arr = result.arr/(2*h);
+
+    var result = central_diff(sinArray,0,2,step=h);
 
     var avgError:real = 0.0;
     for i in result.Dom{

@@ -13,10 +13,10 @@ proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis=
     var wts:list(real(64));
     
     for j in extnt_temp{
-        wts.append(weights[order][(accuracy-1)/2][4+j]);
+        wts.append(weights[order-1][(accuracy-1)/2][4+j]);
     }
     var temp = A.derivative(wts,extnt_temp,axis=axis);
-    temp.arr /= (step**(order+1));
+    temp.arr /= (step**(order));
 
     return temp;
 }

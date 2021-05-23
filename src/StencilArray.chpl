@@ -43,7 +43,7 @@ class StenArray{
         Copy Constructor
         @param a-> An Instance of the StenArray Class
     */
-    proc init(const a:StenArray,copyVal = true){
+    proc init(const a:StenArray,copyVal = false){
         this.Dom = a.Dom;
         this.ProblemSpace = a.ProblemSpace;
         if(copyVal) then this.arr = a.arr;

@@ -5,19 +5,10 @@
 
 use IO; // To make a graph in python
 use StencilArray;
+use linspace;
+use DerivativeMod;
 
-iter linspace(type dtype, start, stop, num, in endpoint:bool=true) {
-    assert(num > 0, "number of points must be > 0");
-    if num==1 then endpoint = false;
-    const ninterval = (if endpoint then num-1 else num):real;
-    const dt = (stop-start)/ninterval;
-
-    for i in 0..#num do yield (start+i*dt):dtype;
-}
-iter linspace(start, stop, num, endpoint=true) {
-    for x in linspace(real(64), start, stop, num, endpoint) do yield x;
-}
-var saveFile = open("/e/GT_chpl/Tests/sinAvgError_Values.txt",iomode.cw);
+var saveFile = open("Tests/Data/sinAvgError_Values.txt",iomode.cw);
 var saveFileWriter = saveFile.writer();
 
 config var start = 100;
@@ -27,10 +18,10 @@ config var step = start;
 var errors:[1..end/start] real;
 
 for n in start..end by step{
-    var sinArray = new StenArray((n-1,),padding=1);
-    var cosArray = new StenArray((n-1,),padding=1);
+    var sinArray = new StenArray((n,),padding=1);
+    var cosArray = new StenArray((n,),padding=0);
 
-    var grid:[1..n] real = linspace(0,2*pi,n);
+    var grid:[1..n] real = linspace(0,2*pi,n,false);
 
     var h = grid[2]-grid[1];
 
@@ -38,17 +29,14 @@ for n in start..end by step{
         sinArray.arr[i] = sin(grid[i]);
     }
 
-    sinArray.arr[0] = sin(grid[n-1]);
-    sinArray.arr[n] = sin(grid[1]);
+    sinArray.arr[0] = sinArray.arr[n];
+    sinArray.arr[n+1] = sinArray.arr[1];
     
     forall i in cosArray.Dom do {
         cosArray.arr[i] = cos(grid[i]);
     }
 
-    // var result = sinArray.derivative((-1,0,1),-1..1);
-    // result.arr = result.arr/(2*h);
-
-    var result = central_diff(sinArray,0,2,step=h);
+    var result = central_diff(sinArray,order=1,accuracy=2,step=h);
 
     var avgError:real = 0.0;
     for i in result.Dom{

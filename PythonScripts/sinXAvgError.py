@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-savedFile = open("Tests\sinAvgError.txt", "r")
+savedFile = open("Tests\Data\sinAvgError_Values.txt", "r")
 li = []
 for line in savedFile:
     li.append(list(map(float, line.split(" "))))
@@ -16,5 +16,5 @@ plt.xlabel('h Values')
 plt.ylabel('Avg Error')
 plt.title('Sin(X) Derivative test')
 plt.legend()
-plt.savefig(fname="python_scripts\sinXAvgErr_LogScale", dpi=1000)
+plt.savefig(fname="PythonScripts\sinXAvgErr_LogScale", dpi=1000)
 plt.show()

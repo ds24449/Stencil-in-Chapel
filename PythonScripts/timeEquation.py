@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-savedFile = open("sinWaveTime.txt", "r")
+savedFile = open("Tests\Temporal\sinWaveTime.txt", "r")
 li = []
 for line in savedFile:
     li.append(list(map(float, line.split(" "))))

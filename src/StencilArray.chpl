@@ -60,13 +60,13 @@ class StenArray{
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
         var res:StenArray = new StenArray(this);
         if(this.ProblemSpace.rank == 1){
-            forall i in this.ProblemSpace{
+            forall i in this.Dom{
                 for (k,j) in zip(weight,extent){
                     res.arr[i] += k*this.arr[i+j];
                 }
             }
         }else{
-            forall i in this.ProblemSpace{
+            forall i in this.Dom{
                 var sum = 0.0;
                 for (k,j) in zip(weight,extent){
                     var temp = i;

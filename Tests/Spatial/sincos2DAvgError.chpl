@@ -52,7 +52,7 @@ for n in start..end by step{
             avgError += abs(result.arr[i,j]-trueValues.arr[i,j]);
         }
     }
-    avgError /= n;
+    avgError /= n*n;
 
     // writeln("n,avgError = ",n,",",avgError);
     // writeln("True vs Calculated = ",trueValues.arr[1,1]," , ",result.arr[1,1]);

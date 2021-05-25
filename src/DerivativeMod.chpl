@@ -21,11 +21,9 @@ proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis=
     return temp;
 }
 
-// proc central_diff(A:StenArray,order:int(32),accuracy(32),axis=(0,1)){
-//     var extnt_temp = (-accuracy/2..accuracy/2,-accuracy/2..accuracy/2);
-//     wts = weights[order][accuracy/2];
-//     wts[4] = wts[4]/2;
-//     return A.derivative((wts,wts),extnt_temp,axis=axis); 
-//     // Here weights should be changed such that at i = 0, are halved
-// }
+proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis=(0,1)){
+    var temp = central_diff(A,order,accuracy,step,axis[0]);
+    temp += central_diff(A,order,accuracy,step,axis[1]);
+    return temp;
+}
 

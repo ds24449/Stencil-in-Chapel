@@ -14,13 +14,17 @@ const weights = [
     @param: step:real -> step value (h or dx)
     @param: axis:int -> Axis along which method is applied
 */
-proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0){
+proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag:bool=false){
     var extnt_temp = -accuracy/2..accuracy/2;
 
     var wts:list(real(64));
     
     for j in extnt_temp{
         wts.append(weights[order-1][(accuracy-1)/2][4+j]);
+    }
+    if(debugFlag){
+        writeln("weights = ",wts);
+        writeln("Extents = ",extnt_temp);
     }
     var temp = A.derivative(wts,extnt_temp,axis=axis);
     temp.arr /= (step**(order));
@@ -50,12 +54,12 @@ const forward_wts = [
 */
 proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag=false){
     
-    order = order-1;
-    var extnt_temp = 0..(accuracy+order);
+    var extnt_temp = 0..(accuracy+order-1);
 
     var wts:list(real(64));
     
     for j in extnt_temp{
+        if(j == extnt_temp.high) do break;
         wts.append(forward_wts[order][accuracy-1][j]);
     }
     if(debugFlag){
@@ -70,7 +74,7 @@ proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:
     return temp;
 }
 
-proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
+proc forward_diff2D(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
     var temp = forward_diff(A,order,accuracy,step,axis[0]);
     temp += forward_diff(A,order,accuracy,step,axis[1]);
     return temp;
@@ -91,13 +95,12 @@ const backward_wts = [
 */
 proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag=false){
     
-    order = order-1;
-    var extnt_temp = -(accuracy+order)..0;
+    var extnt_temp = -(accuracy+order-1)..0;
 
     var wts:list(real(64));
     
     for j in extnt_temp{
-        wts.append(backward_wts[order][accuracy-1][5+j]);
+        wts.append(backward_wts[order][accuracy-1][4+j]);
     }
     if(debugFlag){
         writeln("weights = ",wts);
@@ -111,7 +114,7 @@ proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis
     return temp;
 }
 
-proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
+proc backward_diff2D(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
     var temp = backward_diff(A,order,accuracy,step,axis[0]);
     temp += backward_diff(A,order,accuracy,step,axis[1]);
     return temp;

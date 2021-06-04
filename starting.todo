@@ -1,0 +1,28 @@
+// Can we implement it as Graphs of Calucations like in TensorFlow 1 ? 
+
+
+!- For a Detailed Synopsis take a look at User Manual @ https://gridtools.github.io/gridtools/latest/user_manual/user_manual.html#storage-library
+
+N-D array: 
+    - Dimensions @done inbuilt
+    - Mapping @done
+    - value_type 
+    - referenceable 
+    - Iterator 
+    - reverse iterator if possible
+    - Function to get starting pos,ending pos @done inbuilt
+    - Operators Overaloading @Need-To-Look 
+    - funtion to return size of the array @done inbuilt
+
+Stencil Operators:
+    - Look into Computation Graphs of TensorFlow
+
+
+Tasks:
+    - Try Making a Derivative Class with different accuracy and order @done
+    - Get Fluff Arguments in a list @low @maybe
+    - Look Into Derivative Module @critical @clean-code 
+    - Add Division by scalar for all order and accuracies @done
+    - Time Stepper @high 
+    - 2-D test case sincosAvgErr Increce Accuracy @high 
+    - Upwind Schemes @high

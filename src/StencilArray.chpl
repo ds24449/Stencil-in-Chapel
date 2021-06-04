@@ -7,14 +7,14 @@ class StenArray{
     /*
         Initialize The  StenArray Object
         @param: tupleDims-> tuple of dimensions in order (x,y,z)
-        @param: padding-> Amount of padding to be added 
+        @param: padding-> Amount of padding
         @param: fluff[dim] -> Fluff value. Dim = [X | Y | Z]
     */
-    proc init(tupleDims,padding:int = 1,fluffX = 1,fluffY=1,fluffZ = 1){
+    proc init(tupleDims,padding:int = 1,fluffX:int = 1,fluffY:int = 1,fluffZ:int = 1){
         if(tupleDims.size == 1) then {
             this.Dom = {1..tupleDims(0)};
             this.ProblemSpace = Dom.expand(padding) dmapped Stencil(Dom.expand(padding),fluff=(fluffX,));
-            this.fluff_vals = (fluffX,fluffY,0);
+            this.fluff_vals = (fluffX,0,0);
         }
         else if(tupleDims.size == 2) then {
             var (x,y) = tupleDims;
@@ -32,8 +32,7 @@ class StenArray{
         Initialize a StenArray Object with N-Dimensions
         @param: nDomain-> A Rectangular Domain for Nd array
     */
-    proc init(nDomain: domain,fluff_val=1,padding:int = 1){
-
+    proc init(nDomain: domain,fluff_val:int = 1,padding:int = 1){
         var temp: nDomain.rank*int;
         for i in temp do i=fluff_val;
         this.Dom = nDomain;
@@ -43,7 +42,7 @@ class StenArray{
         Copy Constructor
         @param a-> An Instance of the StenArray Class
     */
-    proc init(const a:StenArray,copyVal = false){
+    proc init(const a:StenArray,copyVal:bool = false){
         this.Dom = a.Dom;
         this.ProblemSpace = a.ProblemSpace;
         if(copyVal) then this.arr = a.arr;
@@ -56,9 +55,9 @@ class StenArray{
         @param extent -> range of indices to be taken into account while calculating stencil operation
         @param axis -> An integer along which we need to find the derivative
     */
-    proc derivative(const weight,const extent,const axis:int=0){ 
+    proc derivative(const weight,const extent,const axis:int = 0){ 
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
-        var res:StenArray = new StenArray(this);
+        var res:StenArray = new StenArray(this,false);
         if(this.ProblemSpace.rank == 1){
             forall i in this.Dom{
                 for (k,j) in zip(weight,extent){
@@ -67,18 +66,20 @@ class StenArray{
             }
         }else{
             forall i in this.Dom{
-                var sum = 0.0;
+                var sum:real = 0.0;
                 for (k,j) in zip(weight,extent){
                     var temp = i;
                     temp[axis] += j;
-                    sum += k*this.arr[temp];
+                    sum += (k*this.arr[temp]);
                 }
                 res.arr[i] = sum;
             }
         }
-        res.arr.updateFluff();
+        //res.arr.updateFluff();
         return res;
     }
+
+    
     /*
         @brief Calculate derivative along 2-Dimensions
         @param weight -> Tuple of Tuple of values to be applied as weights to indices of matrix. Must have 2 Tuples for each individual axis.
@@ -87,6 +88,7 @@ class StenArray{
     */
     proc derivative2D(const weight,const extent,const axis: 2*int){
         var res:StenArray = new StenArray(this,false);
+        // Do this in data parallel manner
         var temp1,temp2:StenArray;
         temp1 = new StenArray(this,false);
         temp2 = new StenArray(this,false);
@@ -102,6 +104,39 @@ class StenArray{
         return res;
     }
 
+
+    /*
+        This Function Takes the domain and calculates value for specified domain
+    */
+    proc spec_derivative(const d:domain,const weight,const extent,const axis){
+        
+        // TODO: Make These Try..Catch blocks. 
+        if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
+        if(d.rank != this.ProblemSpace.rank) then writeln("Raise Error Here! Rank MisMatch");
+
+        var res:StenArray = new StenArray(this,false);
+        if(this.ProblemSpace.rank == 1){
+            forall i in d{
+                for (k,j) in zip(weight,extent){
+                    res.arr[i] += k*this.arr[i+j];
+                }
+            }
+        }else{
+            forall i in d{
+                var sum:real = 0.0;
+                for (k,j) in zip(weight,extent){
+                    var temp = i;
+                    temp[axis] += j;
+                    sum += (k*this.arr[temp]);
+                }
+                res.arr[i] = sum;
+            }
+        }
+        //res.arr.updateFluff();
+        return res;
+    }
+
+
     operator +(lhs:StenArray,rhs:StenArray){
         var temp = new StenArray(lhs,false);
         try{
@@ -112,7 +147,7 @@ class StenArray{
                 throw new Error("Rank or Domain MisMatch Found");
             }
         }catch e{
-            writeln("Error Raised While Adding StenArray's ",e);
+            writeln("Error Raised While Adding StenArray ",e);
             return temp;
         }
     }
@@ -127,17 +162,17 @@ class StenArray{
                 throw new Error("Rank or Domain MisMatch Found");
             }
         }catch e{
-            writeln("Error Raised While Adding StenArray's ",e);
+            writeln("Error Raised While Subtracting StenArray ",e);
             return temp;
         }
     }
 
     proc dims() const {
-        return this.Dom;
+        return this.Dom.dims();
     }
 
     proc dim(idx: int) const{
-        return this.Dom(idx);
+        return this.Dom.dim(idx);
     }
 }
 

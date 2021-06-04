@@ -17,7 +17,7 @@ proc third_bashfourth(initial_value,timedelta:real,iterations){
 
     for i in 1..iterations do {
         if(i == 1){ //y1
-            result[i] = (EulerMethod(initial_value,timedelta));
+            result[i] = (EulerMethod(result[0],timedelta));
         }else if(i == 2){ //y2
             result[i] = (result[i-1] + (timedelta/2)*(3*result[i-1]-result[i-2]));
         }else{ //y3

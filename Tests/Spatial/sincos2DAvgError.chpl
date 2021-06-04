@@ -1,3 +1,5 @@
+// chpl --module-dir src/ Tests/Spatial/sincos2DAvgError.chpl -I/usr/include -L/usr/lib/x86_64-linux-gnu && ./sincos2DAvgError
+
 use IO;
 use StencilArray;
 use DerivativeMod;
@@ -17,38 +19,39 @@ var errors:[1..end/start] real;
 for n in start..end by step{
 
     var grid:[1..n] real = linspace(0,2*pi,n,false);
-    var h = grid[2] - grid[1];
+    var h = abs(grid[2] - grid[1]);
 
-    var ques:StenArray = new StenArray((n,n),padding=1);
+    var ques:StenArray = new StenArray((n,n),padding=2);
     for i in 1..n{
         for j in 1..n{
-            ques.arr[i,j] = sin(grid[i])*cos(grid[j]);  //Sin(x)*Cos(y)
+            ques.arr[i,j] = sin(grid[j])*cos(grid[i]);  //Sin(x)*Cos(y)
         }
     }
-
-    
-    Apply_Bounds(ques,"periodic");// Apply Boundary Conditions
-    //Check for Boundary Conditions
+    // Boundary Conditions
+    Apply_Bounds(ques,"periodic");
     forall i in 1..n{
         assert(ques.arr[i,0] == ques.arr[i,n]);
         assert(ques.arr[i,n+1] == ques.arr[i,1]);
+
+        assert(ques.arr[i,-1] == ques.arr[i,n-1]);
+        assert(ques.arr[i,n+2] == ques.arr[i,2]);
     }
     forall j in 1..n{
         assert(ques.arr[0,j] == ques.arr[n,j]);
         assert(ques.arr[n+1,j] == ques.arr[1,j]); 
+
+        assert(ques.arr[-1,j] == ques.arr[n-1,j]);
+        assert(ques.arr[n+2,j] == ques.arr[2,j]);
     }
 
     var trueValues:StenArray = new StenArray(ques);
     for i in 1..n{
         for j in 1..n{
-            trueValues.arr[i,j] = cos(grid[i])*cos(grid[j])-sin(grid[i])*sin(grid[j]);
+            trueValues.arr[i,j] = -sin(grid[i])*sin(grid[j]) + cos(grid[i])*cos(grid[j]);
         }
     }
 
-    // Apply_Bounds(ques,"periodic");
-
-    var result = central_diff(ques,order=1,accuracy=2,step=h,axis=1);
-    result += central_diff(ques,order=1,accuracy=2,step=h,axis=0);
+    var result = central_diff2D(ques,order=1,accuracy=2,step=h,axis=(0:int(8),1:int(8)));
 
     var avgError:real = 0.0;
     for i in 1..n{
@@ -58,9 +61,6 @@ for n in start..end by step{
     }
     avgError /= n*n;
 
-    // writeln("n,avgError = ",n,",",avgError);
-    // writeln("True vs Calculated = ",trueValues.arr[1,1]," , ",result.arr[1,1]);
-
     errors[n/start] = avgError;
 
     if(n/end == 1) then saveFileWriter.writeln(h);
@@ -68,6 +68,9 @@ for n in start..end by step{
 
     // Create .nc files for both true and false values
     if(n == end) then {
+        var diff = new StenArray((end,end),padding=0);
+        forall i in diff.Dom do diff.arr[i] = result.arr[i]-trueValues.arr[i];
+        write2DStenArray(diff,end,end,"Tests/Data/diff.nc");
         write2DStenArray(result,end,end,"Tests/Data/result.nc");
         write2DStenArray(trueValues,end,end,"Tests/Data/true.nc");
     }

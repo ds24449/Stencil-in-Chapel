@@ -1,14 +1,15 @@
 /*
     A simple test script checking derivative of sinx 
+    chpl --module-dir src/ Tests/Spatial/sinAvgError.chpl && ./sinAvgError
 */
 
 
 use IO; // To make a graph in python
 use StencilArray;
-use linspace;
 use DerivativeMod;
+use linspace;
 
-var saveFile = open("Tests/Data/sinAvgError_Values.txt",iomode.cw);
+var saveFile = open("Tests/Data/sinAvgError.txt",iomode.cw);
 var saveFileWriter = saveFile.writer();
 
 config var start = 100;
@@ -18,8 +19,8 @@ config var step = start;
 var errors:[1..end/start] real;
 
 for n in start..end by step{
-    var sinArray = new StenArray((n,),padding=1);
-    var cosArray = new StenArray((n,),padding=0);
+    var sinArray = new StenArray((n,),padding=2); // An StenArray object with dimension (n-1x1)
+    var cosArray = new StenArray((n,));
 
     var grid:[1..n] real = linspace(0,2*pi,n,false);
 
@@ -28,9 +29,8 @@ for n in start..end by step{
     forall i in sinArray.Dom do {
         sinArray.arr[i] = sin(grid[i]);
     }
-
-    Apply_Bounds(sinArray,"periodic"); // Apply Boundary Condition
-    //Check for boundary conditions
+    
+    Apply_Bounds(sinArray,"periodic");
     assert(sinArray.arr[0] == sinArray.arr[n]);
     assert(sinArray.arr[n+1] == sinArray.arr[1]);
     
@@ -46,7 +46,7 @@ for n in start..end by step{
     }
     avgError /= n;
 
-    // writeln("n,avgError = ",n,",",avgError);
+    //writeln("n,avgError = ",n,",",avgError);
 
     errors[n/start] = avgError;
 

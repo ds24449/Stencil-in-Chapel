@@ -1,3 +1,5 @@
+// chpl --module-dir src/ Tests/Spatial/sincos2DAvgError.chpl -I/usr/include -L/usr/lib/x86_64-linux-gnu && ./sincos2DAvgError
+
 use IO;
 use StencilArray;
 use DerivativeMod;
@@ -58,9 +60,6 @@ for n in start..end by step{
     }
     avgError /= n*n;
 
-    // writeln("n,avgError = ",n,",",avgError);
-    // writeln("True vs Calculated = ",trueValues.arr[1,1]," , ",result.arr[1,1]);
-
     errors[n/start] = avgError;
 
     if(n/end == 1) then saveFileWriter.writeln(h);
@@ -68,6 +67,9 @@ for n in start..end by step{
 
     // Create .nc files for both true and false values
     if(n == end) then {
+        var diff = new StenArray((end,end),padding=0);
+        forall i in diff.Dom do diff.arr[i] = result.arr[i]-trueValues.arr[i];
+        write2DStenArray(diff,end,end,"Tests/Data/diff.nc");
         write2DStenArray(result,end,end,"Tests/Data/result.nc");
         write2DStenArray(trueValues,end,end,"Tests/Data/true.nc");
     }

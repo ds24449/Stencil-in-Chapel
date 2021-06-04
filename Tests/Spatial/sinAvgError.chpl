@@ -33,8 +33,6 @@ for n in start..end by step{
     //Check for boundary conditions
     assert(sinArray.arr[0] == sinArray.arr[n]);
     assert(sinArray.arr[n+1] == sinArray.arr[1]);
-    assert(sinArray.arr[-1] == sinArray.arr[n-1]);
-    assert(sinArray.arr[n+2] == sinArray.arr[2]);
     
     forall i in cosArray.Dom do {
         cosArray.arr[i] = cos(grid[i]);

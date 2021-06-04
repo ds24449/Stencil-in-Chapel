@@ -59,8 +59,7 @@ proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:
     var wts:list(real(64));
     
     for j in extnt_temp{
-        if(j == extnt_temp.high) do break;
-        wts.append(forward_wts[order][accuracy-1][j]);
+        wts.append(forward_wts[order-1][accuracy-1][j]);
     }
     if(debugFlag){
         writeln("weights = ",wts);
@@ -100,7 +99,7 @@ proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis
     var wts:list(real(64));
     
     for j in extnt_temp{
-        wts.append(backward_wts[order][accuracy-1][4+j]);
+        wts.append(backward_wts[order-1][accuracy-1][4+j]);
     }
     if(debugFlag){
         writeln("weights = ",wts);

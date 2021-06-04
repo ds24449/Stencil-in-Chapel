@@ -25,13 +25,17 @@ for n in start..end by step{
             ques.arr[i,j] = sin(grid[i])*cos(grid[j]);  //Sin(x)*Cos(y)
         }
     }
+
+    
+    Apply_Bounds(ques,"periodic");// Apply Boundary Conditions
+    //Check for Boundary Conditions
     forall i in 1..n{
-        ques.arr[i,0] = ques.arr[i,n];
-        ques.arr[i,n+1] = ques.arr[i,1];
+        assert(ques.arr[i,0] == ques.arr[i,n]);
+        assert(ques.arr[i,n+1] == ques.arr[i,1]);
     }
     forall j in 1..n{
-        ques.arr[0,j] = ques.arr[n,j];
-        ques.arr[n+1,j] = ques.arr[1,j]; 
+        assert(ques.arr[0,j] == ques.arr[n,j]);
+        assert(ques.arr[n+1,j] == ques.arr[1,j]); 
     }
 
     var trueValues:StenArray = new StenArray(ques);

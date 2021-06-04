@@ -29,14 +29,18 @@ for n in start..end by step{
         sinArray.arr[i] = sin(grid[i]);
     }
 
-    sinArray.arr[0] = sinArray.arr[n];
-    sinArray.arr[n+1] = sinArray.arr[1];
+    Apply_Bounds(sinArray,"periodic"); // Apply Boundary Condition
+    //Check for boundary conditions
+    assert(sinArray.arr[0] == sinArray.arr[n]);
+    assert(sinArray.arr[n+1] == sinArray.arr[1]);
+    assert(sinArray.arr[-1] == sinArray.arr[n-1]);
+    assert(sinArray.arr[n+2] == sinArray.arr[2]);
     
     forall i in cosArray.Dom do {
         cosArray.arr[i] = cos(grid[i]);
     }
 
-    var result = central_diff(sinArray,order=1,accuracy=2,step=h);
+    var result = central_diff(sinArray,order=1,accuracy=4,step=h,axis=0);
 
     var avgError:real = 0.0;
     for i in result.Dom{

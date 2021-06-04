@@ -141,35 +141,37 @@ class StenArray{
     }
 }
 
-proc Apply_Bounds(A:StenArray,boundType:string){
+proc Apply_Bounds(ref A:StenArray,boundType:string){
     if(boundType.toLower() == "periodic"){
-        if(A.ProblemSpace.rank>1){
-            for i in 0..<A.ProblemSpace.rank{
-                for j in A.Dom{
-                    var k = j;
-                    var l = j;
-                    l[i] = A.ProblemSpace.dim(i).low;
-                    k[i] = A.ProblemSpace.dim(i).high;
-                    var new_j_1 = j;
-                    var new_j_2 = j;
-                    new_j_1[i] = A.Dom.dim(i).high;
-                    new_j_2[i] = A.Dom.dim(i).low;
-                    A.arr[l] = A.arr[new_j_1];
-                    A.arr[k] = A.arr[new_j_2];
-                }
+        if(A.ProblemSpace.rank == 1){
+            var diff = A.ProblemSpace.high - A.Dom.high;
+            var n = A.Dom.high;
+            forall i in 1..diff{
+                A.arr[1-i] = A.arr[n+1 - i];
+                A.arr[n+i] = A.arr[i]; 
             }
-        }else{
-            for j in A.Dom{
-                var k = j;
-                var l = j;
-                l = A.ProblemSpace.low;
-                k = A.ProblemSpace.high;
-                var new_j_1 = j;
-                var new_j_2 = j;
-                new_j_1 = A.Dom.high;
-                new_j_2 = A.Dom.low;
-                A.arr[l] = A.arr[new_j_1];
-                A.arr[k] = A.arr[new_j_2];
+        }
+
+        if(A.ProblemSpace.rank == 2){
+            var diff = A.ProblemSpace.high[0] - A.Dom.high[0]; //Padding
+            var n = A.Dom.high[0]; // because it is rectangular domain {1..n,1..n}
+            for i in 1..diff{
+                var left_replace:domain = {1..n,1-i..1-i}; // These values are to be replaced by right_orig
+                var left_orig:domain = {1..n,i..i}; // These values will replace right_replace
+
+                var right_replace:domain = {1..n,n+i..n+i};
+                var right_orig:domain = {1..n,n-i+1..n-i+1};
+
+                var top_replace:domain = {1-i..1-i,1..n};
+                var top_orig:domain = {i..i,1..n};
+
+                var bottom_replace:domain = {n+i..n+i,1..n};
+                var bottom_orig:domain = {n-i+1..n-i+1,1..n};
+
+                A.arr[left_replace] = A.arr[right_orig];
+                A.arr[right_replace] = A.arr[left_orig];
+                A.arr[top_replace] = A.arr[bottom_orig];
+                A.arr[bottom_replace] = A.arr[top_orig];
             }
         }
     }

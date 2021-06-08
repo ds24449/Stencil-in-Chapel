@@ -13,7 +13,7 @@ use Time_Stepper;
 use IO;
 use ntCDF;
 
-var saveFile = open("/e/GT_chpl/sinWaveTime.txt",iomode.cw);
+var saveFile = open("/e/Stencil-in-Chapel/Tests/Data/sinWaveTime.txt",iomode.cw);
 var writer = saveFile.writer();
 
 config var n = 1000;

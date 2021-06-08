@@ -102,6 +102,35 @@ class StenArray{
         return res;
     }
 
+    proc spec_derivative(const d:domain,const weight,const extent,const axis){
+        
+        // TODO: Make These Try..Catch blocks. 
+        if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
+        if(d.rank != this.ProblemSpace.rank) then writeln("Raise Error Here! Rank MisMatch");
+
+        var res:StenArray = new StenArray(this,true);
+        if(this.ProblemSpace.rank == 1){
+            forall i in d{
+                for (k,j) in zip(weight,extent){
+                    res.arr[i] += k*this.arr[i+j];
+                }
+            }
+        }else{
+            forall i in d{
+                var sum:real = 0.0;
+                for (k,j) in zip(weight,extent){
+                    var temp = i;
+                    temp[axis] += j;
+                    // writeln(this.arr[temp]);
+                    sum += (k*this.arr[temp]);
+                }
+                res.arr[i] = sum;
+            }
+        }
+        //res.arr.updateFluff();
+        return res;
+    }
+    
     operator +(lhs:StenArray,rhs:StenArray){
         var temp = new StenArray(lhs,false);
         try{

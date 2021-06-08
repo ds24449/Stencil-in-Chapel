@@ -47,10 +47,7 @@ for n in start..end by step{
         }
     }
 
-    // Apply_Bounds(ques,"periodic");
-
-    var result = central_diff(ques,order=1,accuracy=2,step=h,axis=1);
-    result += central_diff(ques,order=1,accuracy=2,step=h,axis=0);
+    var result = central_diff2D(ques,order=1,accuracy=2,step=h,axis=(0:int(8),1:int(8)));
 
     var avgError:real = 0.0;
     for i in 1..n{

@@ -123,8 +123,7 @@ proc backward_diff2D(A:StenArray,order:int(32),accuracy:int(32),step:real(64),ax
 // --------------- Derivative for specified domains (Mixed Derivative)
 // Example if on first half we need to perform forward difference and central for rest
 
-proc mixed_derivative(A:StenArray,const scheme:string,const d:domain,const order:int,const accuracy:int,const step:real,const axis:int){
-    var temp:StenArray;
+proc mixed_derivative(const ref A:StenArray,ref res:StenArray,const scheme:string,const d:domain,const order:int,const accuracy:int,const step:real,const axis:int){
     var extnt_temp:range;
     var wts:list(real(64));
     select scheme{
@@ -135,7 +134,7 @@ proc mixed_derivative(A:StenArray,const scheme:string,const d:domain,const order
                 wts.append(forward_wts[order-1][accuracy-1][j]);
             }
 
-            writeln("Applying Forward");
+            // writeln("Applying Forward");
         }
         
         when "backward" do{
@@ -145,7 +144,7 @@ proc mixed_derivative(A:StenArray,const scheme:string,const d:domain,const order
                 wts.append(backward_wts[order-1][accuracy-1][4+j]);
             }
 
-            writeln("Applying Backward");
+            // writeln("Applying Backward");
         }
 
         when "central" do{
@@ -155,14 +154,12 @@ proc mixed_derivative(A:StenArray,const scheme:string,const d:domain,const order
                 wts.append(weights[order-1][(accuracy-1)/2][4+j]);
             }
             
-            writeln("Applying Central");
+            // writeln("Applying Central");
         }
         otherwise
             writeln("Error: Mixed Derivative! Wrong Scheme Name");
     }
-    writeln(wts);
-    writeln(extnt_temp);
-    temp = A.spec_derivative(d,wts,extnt_temp,axis);
-    temp.arr[d] /= (step**order);
-    return temp;
+    res.arr[d] = A.spec_derivative(d,wts,extnt_temp,axis);
+    res.arr[d] /= (step**order);
+    // return temp;
 }

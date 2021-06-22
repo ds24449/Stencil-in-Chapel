@@ -114,7 +114,7 @@ class StenArray{
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
         if(d.rank != this.ProblemSpace.rank) then writeln("Raise Error Here! Rank MisMatch");
 
-        var res:StenArray = new StenArray(this,true);
+        var res:StenArray = new StenArray(this,false);
         if(this.ProblemSpace.rank == 1){
             forall i in d{
                 for (k,j) in zip(weight,extent){
@@ -129,12 +129,21 @@ class StenArray{
                     temp[axis] += j;
                     // writeln(this.arr[temp]);
                     sum += (k*this.arr[temp]);
+                    // writeln("[INTERNAL DEBUG - VARIABLES]");
+                    // writeln(" temp = ",temp);
+                    // writeln(" (i,j,k) = ( ",i," ,",j," ,",k,")");
+                    // writeln(" calculation = ",k*this.arr[temp]);
+                    // writeln(" sum = ",sum);
                 }
                 res.arr[i] = sum;
             }
         }
+
         //res.arr.updateFluff();
-        return res;
+        // writeln("-------------------[INTERNAL DEBUG]-------------------");
+        // writeln(res.arr);
+        // writeln("-------------------[INTERNAL DEBUG]-------------------");
+        return res.arr[d]; // Returning Value for the domain d;
     }
 
 
@@ -204,10 +213,10 @@ proc Apply_Bounds(ref A:StenArray,boundType:string){
                 var bottom_replace:domain = {n+i..n+i,1..n};
                 var bottom_orig:domain = {n-i+1..n-i+1,1..n};
 
-                A.arr[left_replace] = A.arr[right_orig];
-                A.arr[right_replace] = A.arr[left_orig];
-                A.arr[top_replace] = A.arr[bottom_orig];
-                A.arr[bottom_replace] = A.arr[top_orig];
+                begin A.arr[left_replace] = A.arr[right_orig];
+                begin A.arr[right_replace] = A.arr[left_orig];
+                begin A.arr[top_replace] = A.arr[bottom_orig];
+                begin A.arr[bottom_replace] = A.arr[top_orig];
             }
         }
     }

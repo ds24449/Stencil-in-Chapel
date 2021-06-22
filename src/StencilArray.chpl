@@ -108,7 +108,7 @@ class StenArray{
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
         if(d.rank != this.ProblemSpace.rank) then writeln("Raise Error Here! Rank MisMatch");
 
-        var res:StenArray = new StenArray(this,true);
+        var res:StenArray = new StenArray(this,false);
         if(this.ProblemSpace.rank == 1){
             forall i in d{
                 for (k,j) in zip(weight,extent){
@@ -121,14 +121,13 @@ class StenArray{
                 for (k,j) in zip(weight,extent){
                     var temp = i;
                     temp[axis] += j;
-                    // writeln(this.arr[temp]);
                     sum += (k*this.arr[temp]);
                 }
                 res.arr[i] = sum;
             }
         }
         //res.arr.updateFluff();
-        return res;
+        return res.arr[d]; // Returning Value for the domain d;
     }
     
     operator +(lhs:StenArray,rhs:StenArray){

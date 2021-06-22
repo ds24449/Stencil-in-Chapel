@@ -38,16 +38,13 @@ for n in start..end by step{
         cosArray.arr[i] = cos(grid[i]);
     }
 
-    var result = central_diff(sinArray,order=1,accuracy=4,step=h,axis=0);
+    var result = central_diff(sinArray,order=1,accuracy=2,step=h,axis=0);
 
     var avgError:real = 0.0;
     for i in result.Dom{
         avgError += abs(result.arr[i]-cosArray.arr[i]);
     }
     avgError /= n;
-
-    // writeln("n,avgError = ",n,",",avgError);
-
     errors[n/start] = avgError;
 
     if(n/end == 1) then saveFileWriter.writeln(h);

@@ -14,7 +14,46 @@ const weights = [
     @param: step:real -> step value (h or dx)
     @param: axis:int -> Axis along which method is applied
 */
-proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag:bool=false){
+proc Finite_Difference(A:StenArray,scheme = "central",order:int(32) = 1,accuracy:int(32) = 2,step:real(64),axis:int = 0,debugFlag:bool=false){
+    select scheme{
+        when "forward" do{
+            return forward_diff(A,order,accuracy,step,axis);
+        }
+        when "backward" do{
+           return backward_diff(A,order,accuracy,step,axis);
+        }
+        when "central" do{
+            return central_diff(A,order,accuracy,step,axis);
+        }
+
+        otherwise{
+            writeln("Error: Wrong Scheme Name");
+            return new StenArray(A,true);
+        }
+    }
+}
+
+proc Finite_Difference2D(A:StenArray,scheme = "central",order:int(32) = 1,accuracy:int(32) = 2,step:real(64),axis:2*int,debugFlag:bool=false){
+    select scheme{
+        when "forward" do{
+            return forward_diff(A,order,accuracy,step,axis);
+        }
+        when "backward" do{
+           return backward_diff(A,order,accuracy,step,axis);
+        }
+        when "central" do{
+            return central_diff(A,order,accuracy,step,axis);
+        }
+
+        otherwise{
+            writeln("Error: Wrong Scheme Name");
+            return new StenArray(A,true);
+        }
+    }
+}
+
+
+proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int=0,debugFlag:bool=false){
     var extnt_temp = -accuracy/2..accuracy/2;
 
     var wts:list(real(64));
@@ -32,7 +71,7 @@ proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:
     return temp;
 }
 
-proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
+proc central_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int=(0,1)){
     var temp = central_diff(A,order,accuracy,step,axis[0]);
     temp += central_diff(A,order,accuracy,step,axis[1]);
     return temp;
@@ -52,10 +91,9 @@ const forward_wts = [
     @param: step:real -> step value (h or dx)
     @param: axis:int -> Axis along which method is applied
 */
-proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag=false){
+proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int=0,debugFlag=false){
     
     var extnt_temp = 0..(accuracy+order-1);
-
     var wts:list(real(64));
     
     for j in extnt_temp{
@@ -66,14 +104,13 @@ proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:
         writeln("Extents = ",extnt_temp);
     }
 
-
     var temp = A.derivative(wts,extnt_temp,axis=axis);
     temp.arr /= (step**(order));
 
     return temp;
 }
 
-proc forward_diff2D(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
+proc forward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int=(0,1)){
     var temp = forward_diff(A,order,accuracy,step,axis[0]);
     temp += forward_diff(A,order,accuracy,step,axis[1]);
     return temp;
@@ -92,7 +129,7 @@ const backward_wts = [
     @param: step:real -> step value (h or dx)
     @param: axis:int -> Axis along which method is applied
 */
-proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int(8)=0,debugFlag=false){
+proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:int=0,debugFlag=false){
     
     var extnt_temp = -(accuracy+order-1)..0;
 
@@ -113,7 +150,7 @@ proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis
     return temp;
 }
 
-proc backward_diff2D(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int(8)=(0,1)){
+proc backward_diff(A:StenArray,order:int(32),accuracy:int(32),step:real(64),axis:2*int=(0,1)){
     var temp = backward_diff(A,order,accuracy,step,axis[0]);
     temp += backward_diff(A,order,accuracy,step,axis[1]);
     return temp;
@@ -128,33 +165,24 @@ proc mixed_derivative(const ref A:StenArray,ref res:StenArray,const scheme:strin
     var wts:list(real(64));
     select scheme{
         when "forward" do{
-            //TODO: Apply Forward Scheme;
             extnt_temp = 0..(accuracy+order-1);
             for j in extnt_temp{
                 wts.append(forward_wts[order-1][accuracy-1][j]);
             }
-
-            // writeln("Applying Forward");
         }
         
         when "backward" do{
-            //TODO: Apply Backward Scheme;
             extnt_temp = -(accuracy+order-1)..0;
             for j in extnt_temp{
                 wts.append(backward_wts[order-1][accuracy-1][4+j]);
             }
-
-            // writeln("Applying Backward");
         }
 
         when "central" do{
-            //TODO: Apply Central Scheme;
             extnt_temp = -accuracy/2..accuracy/2;
             for j in extnt_temp{
                 wts.append(weights[order-1][(accuracy-1)/2][4+j]);
             }
-            
-            // writeln("Applying Central");
         }
         otherwise
             writeln("Error: Mixed Derivative! Wrong Scheme Name");

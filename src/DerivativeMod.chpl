@@ -1,3 +1,5 @@
+// Obsolete 
+
 use StencilArray;
 use List;
 // TODO: Try creating an Finite Difference solver class, so it would be easy for user us aswell

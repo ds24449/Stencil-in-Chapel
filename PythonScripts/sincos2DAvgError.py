@@ -9,7 +9,7 @@ calc = nc.Dataset("E:\GT_chpl\Tests\Data\\result.nc",
 diff = nc.Dataset("E:\GT_chpl\Tests\Data\\diff.nc",
                   "r").variables["data"][:]
 
-savedFile = open("Tests\Data\sincos2DAvgError.txt", "r")
+savedFile = open("Stencil-in-Chapel\Tests\Data\sincos2DAvgError.txt", "r")
 li = []
 for line in savedFile:
     li.append(list(map(float, line.split(" "))))
@@ -42,5 +42,5 @@ plt.xlabel('h Values')
 plt.ylabel('Avg Error')
 plt.title('Sin(X)Cos(Y) Derivative test')
 plt.legend()
-plt.savefig(fname="PythonScripts\sincos2DAvgErr_LogScale", dpi=1000)
+# plt.savefig(fname="PythonScripts\sincos2DAvgErr_LogScale", dpi=1000)
 plt.show()

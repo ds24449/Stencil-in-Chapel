@@ -1,3 +1,5 @@
+// Obsolete
+
 use StencilDist;
 class StenArray{
     var Dom: domain;

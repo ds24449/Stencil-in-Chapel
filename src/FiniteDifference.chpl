@@ -36,7 +36,7 @@ class FDSolver{
     var orig: DataArray; // Data Upon which FD will work
     // TODO: create a const dom on which the derivative will work and then 
     // use orig data to add padding and create boundary conditions 
-    const dom: domain;
+    var dom: domain;
 
     proc init(const orig:DataArray){
         this.orig = new owned DataArray(orig.arr,orig.dimensions);

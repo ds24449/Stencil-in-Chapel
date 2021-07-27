@@ -60,8 +60,7 @@ module DataArray {
         param stridable: bool;
 
         var dom: domain(rank, stridable = stridable);
-        // var expanded_dom: domain(rank, stridable = stridable); //TODO: Need to add?
-        var arr: [dom] eltType;  //TODO: Change dom here to expanded dom
+        var arr: [dom] eltType;
         var dimensions: domain(string);
 
         proc init(type eltType, size: domain, dimensions: domain(string)) where isDefaultInitializable(eltType) {

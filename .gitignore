@@ -9,3 +9,6 @@ other/
 *.png
 PlayGround
 sphinx_solvingPDE
+sinAvgError
+sincos2DAvgError
+*.txt

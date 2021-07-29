@@ -34,10 +34,14 @@ class FDSolver{
     ];
 
     var orig: DataArray; // Data Upon which FD will work
-    const dom: domain;
+    var orig_dom: domain;
+    // TODO: create a const dom on which the derivative will work and then 
+    // use orig data to add padding and create boundary conditions 
+    var dom: domain;
 
     proc init(const orig:DataArray){
         this.orig = new owned DataArray(orig.arr,orig.dimensions);
+        this.orig_dom = orig.dom;
         this.dom = orig.dom;
     }
 
@@ -46,10 +50,10 @@ class FDSolver{
     proc derivative(const weight,const extent,const axis:int = 0){ 
         if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
 
-        var data:DataArray = new owned DataArray(this.orig.arr[this.dom],this.orig.dimensions); // change the domain here
+        var data:DataArray = new owned DataArray(this.orig.arr[this.orig_dom],this.orig.dimensions); // change the domain here
 
-        if(data.dom.rank == 1){
-            forall i in data.dom{
+        if(this.dom.rank == 1){
+            forall i in this.dom{
                 data.arr[i] = 0;
                 for (k,j) in zip(weight,extent){
                     data.arr[i] += k*this.orig.arr[i+j]; //TODO: LOOK OUT THESE IFs
@@ -57,7 +61,7 @@ class FDSolver{
             }
         }
         else{
-            forall i in data.dom{
+            forall i in this.dom{
                 var sum:real = 0.0;
 
                 for (k,j) in zip(weight,extent){
@@ -91,7 +95,7 @@ class FDSolver{
     }
 
     proc apply_boundary(const ax:int,left_bc:string,right_bc:string,accuracy=2){
-        var old_dom = this.dom;
+        var old_dom = this.orig_dom;
         
         if(left_bc == "periodic"){
             for i in 1..accuracy{

@@ -1,5 +1,14 @@
+random_stuff.py
 .vscode/
+other/
 .fake
 .ionide
 *.png
+*.todo
 *.nc
+*.png
+PlayGround
+sphinx_solvingPDE
+sinAvgError
+sincos2DAvgError
+*.txt

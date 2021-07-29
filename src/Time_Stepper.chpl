@@ -1,5 +1,6 @@
 use DataArray;
 use linspace;
+use List;
 
 // class Time_Stepper{
 
@@ -40,21 +41,22 @@ use linspace;
 
 
 
-proc ForwardEuler(rhs:func(shared AbstractDataArray,real,shared AbstractDataArray),in U_0:shared DataArray,dt:real,T:real,dx:real){
+proc ForwardEuler(rhs:func(shared AbstractDataArray,real,shared AbstractDataArray),in U_0:shared DataArray,dt:real,T:real){
 
     var N_t = round(T/dt):int;
     var t = linspace(0,T,N_t+1);
     
     var result = new shared DataArray(U_0.arr,U_0.dimensions);
     var result_abs = result:AbstractDataArray;
+    var result_list:list(shared AbstractDataArray);
 
-    for i in 0..<N_t{
-        // writeln(t[i].type:string);
-        var rez:AbstractDataArray = rhs(result_abs,t[i]);
+    for i in 1..N_t{
+        result_abs = result:AbstractDataArray;
+        var rez:AbstractDataArray = rhs(result_abs,t[i]); // f(x,t)
         var tmprez = rez:DataArray(real,1,false); //Because Return Value is AbstractDA
         tmprez.arr = tmprez.arr * dt;
-        result = result + tmprez;
+        result = result + tmprez;   //  result = result + dt*f(x,t)
+        result_list.append(result);
     }
-
-    return result;
+    return result_list;
 }

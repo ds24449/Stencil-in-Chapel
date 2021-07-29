@@ -6,7 +6,7 @@ use IO; // To make a graph in python
 use DataArray;
 use FiniteDifference;
 use linspace;
-use ntCDF; // EDIT THIS
+// use ntCDF; // EDIT THIS
 
 var saveFile = open("Tests/Data/sincos2DAvgError.txt",iomode.cw);
 var saveFileWriter = saveFile.writer();

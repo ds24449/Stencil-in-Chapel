@@ -18,19 +18,21 @@ use DataArray;
 use FiniteDifference;
 use Time_Stepper;
 use linspace;
+use List;
+use IO;
 
-config const L:real = 1.5;
-config const N:int = 4;
-config const beta:real = 0.5;
-config const dt:real = 0.1;
+// Parameters 
+config const L:real = 0.5;  // Length
+config const N:int = 20;     // Number of elements
+config const beta:real = 8.2E-5;
+config const dt:real = 0.00034375;
+config const T = 1*60;
 
-const mesh:[1..N] real = linspace(0,L,N);
-const dx = mesh[2]-mesh[1];
-var U_0 = new shared DataArray(real,{0..N+1},{"X"});
-U_0.arr[0] = u_exact(0,0);
+const x = linspace(0,L,N+1);
+const dx = x[2]-x[1];
 
 proc dsdt(t:real){
-    return 3*(-L); // L is global
+    return 0.0; // L is global
 }
 
 proc u_exact(x:real,t:real){
@@ -38,50 +40,61 @@ proc u_exact(x:real,t:real){
 }
 
 proc dudx(t:real){
-    return (3*t + 2);
+    return 0.0;
 }
 
 proc s(t:real){
-    return u_exact(0,t);
+    return 323.0;
 }
 
 proc g(x:real,t:real){
-    return 3*(x - L);
+    return 0.0;
 }
 
 proc rhs(u:shared AbstractDataArray,in t:real){
     var old_rh = u:DataArray(real,1,false);
     var N = old_rh.arr.domain.high-1; // assuming u is 1-Dimensional
     var rh = new shared DataArray(old_rh.arr,old_rh.dimensions);
-
-    rh.arr[0] = dsdt(t);
-    rh.arr[N+1] = 2*dx*dudx(t); // dx here is also global
-
-    var Solver = new FDSolver(rh);
-    Solver.dom = {1..N};
-
+    
+    var Solver = new FDSolver(old_rh);
+    Solver.dom = {1..N-1};
+    
     rh = Solver.Finite_Difference(scheme = "central",order = 2,accuracy = 2,step = dx,axis = 0);
     rh.arr = beta*rh.arr;
+    
+    rh.arr[0] = dsdt(t);
+    rh.arr[N] = (beta/dx**2)*(old_rh.arr[N-1] + 2*dx*dudx(t) - 2*old_rh.arr[N]) + g(x[N],t);
 
-    forall i in rh.dom{
-        rh.arr[i] += g(mesh[i],t);
+    forall i in 1..N-1{
+        rh.arr[i] += g(x[i],t);
     }
 
     return rh:AbstractDataArray;
 }
 
-forall i in 1..N {
-    U_0.arr[i] = u_exact(mesh[i],0);
+var U_0 = new shared DataArray(real,{0..N+1},{"X"});
+U_0.arr[0] = s(0);
+forall i in 1..N+1 {
+    U_0.arr[i] = 283.0;
 }
 
 var results;
-results = ForwardEuler(rhs,U_0,dt,T=1.2,dx);
+results = ForwardEuler(rhs,U_0,dt,T=T);
+writeln(round(T/dt):int);
+writeln(results.size);
+var saveFile = open("Tests/Data/hotrod.txt",iomode.cw);
+var saveFileWriter = saveFile.writer();
 
-// Checking accuracy
-var T = 1.2;
-var N_t = round(T/dt):int;
-var t = linspace(0,T,N_t+1);
 
-for i in 1..N{
-    writeln(u_exact(mesh[i],t[i]) - results.arr[i]);
+saveFileWriter.writeln(x);
+var count = 0;
+for i in results{
+    count+=1;
+    if(count%10000 == 0){
+        var temp = i:DataArray(real,1,false);
+        saveFileWriter.writeln(temp.arr);
+    }
 }
+saveFileWriter.close();
+saveFile.fsync();
+saveFile.close();

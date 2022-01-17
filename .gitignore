@@ -12,3 +12,5 @@ sphinx_solvingPDE
 sinAvgError
 sincos2DAvgError
 *.txt
+FiniteDifference
+sincos

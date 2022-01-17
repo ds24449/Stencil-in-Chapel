@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-savedFile = open("Tests\Data\sinAvgError_Values.txt", "r")
+savedFile = open("Tests\Data\sinAvgError.txt", "r")
 li = []
 for line in savedFile:
     li.append(list(map(float, line.split(" "))))

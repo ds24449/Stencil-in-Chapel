@@ -38,8 +38,9 @@ for n in start..end by step{
     // mixed_derivative(sinArray,result,scheme="central",d={6..n-6},order=1,accuracy=2,step=h,0);
 
     var Solver = new owned FDSolver(sinArray);
-    Solver.apply_boundary(["X" => ("periodic","periodic")]);
-    var result = Solver.Finite_Difference(scheme="central",order=1,accuracy=2,step=h,axis=0);
+    // Solver.apply_boundary(["X" => ("periodic","periodic")]);
+    // var result = Solver.Finite_Difference(scheme="central",order=1,accuracy=2,step=h,axis=0);
+    var result = sinArray;
 
     var avgError:real = 0.0;
     for i in result.dom{

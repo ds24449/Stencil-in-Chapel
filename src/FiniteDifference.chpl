@@ -48,7 +48,7 @@ class FDSolver{
     // Procedures for Finite Differences 
     // --- Primitive Procedures ---
     proc derivative(const weight,const extent,const axis:int = 0){ 
-        if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
+        // if(weight.size != extent.size) then writeln("Weight and Extent length Mis-Match in derivative function");
 
         var data:DataArray = new owned DataArray(this.orig.arr[this.orig_dom],this.orig.dimensions); // change the domain here
 
@@ -56,7 +56,7 @@ class FDSolver{
             forall i in this.dom{
                 data.arr[i] = 0;
                 for (k,j) in zip(weight,extent){
-                    data.arr[i] += k*this.orig.arr[i+j]; //TODO: LOOK OUT THESE IFs
+                    data.arr[i] += k*this.orig.arr[i+j];
                 }
             }
         }
@@ -67,7 +67,7 @@ class FDSolver{
                 for (k,j) in zip(weight,extent){
                     var temp = i;
                     temp[axis] += j;
-                    sum += (k*this.orig.arr[temp]); //TODO: LOOK OUT FOR THESE IFs
+                    sum += (k*this.orig.arr[temp]);
                 }
                 data.arr[i] = sum;
             }
@@ -151,11 +151,11 @@ class FDSolver{
             if(dict[d].type == 2*string){
                 var left_bc = dict[d][0];
                 var right_bc = dict[d][1];
-                apply_boundary(axis,left_bc,right_bc,accuracy = 2);
+                apply_boundary(axis,left_bc,right_bc,accuracy);
             }
             else{
                 var bc = dict[d];
-                apply_boundary(axis,bc,bc,accuracy = 2);
+                apply_boundary(axis,bc,bc,accuracy);
             }
         }
     }
